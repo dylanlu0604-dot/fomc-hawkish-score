@@ -145,6 +145,20 @@ function createChart(dashboard) {
     },
   });
 
+  document.querySelectorAll(".legend-toggle[data-dataset-index]").forEach((button) => {
+    const datasetIndex = Number(button.dataset.datasetIndex);
+    const updateButton = () => {
+      const visible = chart.isDatasetVisible(datasetIndex);
+      button.setAttribute("aria-pressed", String(visible));
+    };
+    button.addEventListener("click", () => {
+      chart.setDatasetVisibility(datasetIndex, !chart.isDatasetVisible(datasetIndex));
+      chart.update();
+      updateButton();
+    });
+    updateButton();
+  });
+
   const range = document.querySelector("#range-select");
   const updateRange = () => {
     const newest = series.at(-1).x;

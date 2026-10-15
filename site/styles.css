@@ -57,7 +57,10 @@ select, input { border: 1px solid #dce3eb; border-radius: 8px; background: white
 select { padding: 8px 30px 8px 10px; }
 select:focus, input:focus { border-color: #84a9e8; box-shadow: 0 0 0 3px rgb(37 99 235 / 9%); }
 .chart-legend { display: flex; flex-wrap: wrap; gap: 19px; padding: 23px 0 9px; color: #66758a; font-size: 11px; }
-.chart-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend-toggle { display: inline-flex; align-items: center; gap: 7px; padding: 3px 2px; border: 0; border-radius: 4px; background: transparent; color: inherit; font: inherit; cursor: pointer; transition: color .15s ease, opacity .15s ease; }
+.legend-toggle:hover { color: #263951; }
+.legend-toggle:focus-visible { outline: 2px solid #84a9e8; outline-offset: 3px; }
+.legend-toggle[aria-pressed="false"] { opacity: .42; }
 .legend-line { display: inline-block; width: 18px; height: 0; border-top: 2px solid; }
 .legend-score { border-color: var(--blue); border-top-style: dashed; }
 .legend-ma4 { border-color: var(--teal); }
