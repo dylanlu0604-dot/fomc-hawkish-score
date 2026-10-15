@@ -76,7 +76,8 @@
           <div class="panel-heading table-heading-row">
             <div>
               <div class="eyebrow">MEETING HISTORY</div>
-              <h2 id="table-heading">會議計分表</h2>
+              <h2 id="table-heading">逐場評分細節</h2>
+              <p class="panel-subtitle">拆解利率決議、聲明語氣、資產負債表與委員異議對總分的貢獻。</p>
             </div>
             <label class="search-control"><span class="sr-only">搜尋會議</span>
               <input id="meeting-search" type="search" placeholder="搜尋日期、決議或理由" autocomplete="off">
@@ -86,12 +87,13 @@
           <div class="table-scroll">
             <table>
               <thead>
-                <tr><th scope="col">會議日期</th><th scope="col">利率決議</th><th scope="col" class="numeric">原始分數</th><th scope="col" class="numeric">4 次均線</th><th scope="col" class="numeric">8 次均線</th><th scope="col">評分摘要</th><th scope="col">來源</th></tr>
+                <tr><th scope="col">會議日期</th><th scope="col">利率決議</th><th scope="col" class="numeric">利率項 ×3</th><th scope="col" class="numeric">語氣項 ×1</th><th scope="col">資產負債表項 ×2</th><th scope="col">利率異議調整</th><th scope="col" class="numeric">最終分數</th><th scope="col">AI 判讀理由</th><th scope="col">來源</th></tr>
               </thead>
-              <tbody id="score-rows"><tr><td colspan="7" class="empty-row">正在載入計分資料…</td></tr></tbody>
+              <tbody id="score-rows"><tr><td colspan="9" class="empty-row">正在載入計分資料…</td></tr></tbody>
             </table>
           </div>
-          <div class="table-footer"><span id="table-count">—</span><span>最新會議優先</span></div>
+          <p class="formula-note">總分 = clamp(5 + 利率項 + 語氣項 + 資產負債表項 + 利率異議調整, 0, 10)。各項細節顯示於欄位次行。</p>
+          <div class="table-footer"><span id="table-count">—</span><span>最新會議優先 · 可左右滑動查看所有欄位</span></div>
         </section>
       </main>
 

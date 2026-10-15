@@ -13,29 +13,36 @@ function eventText(row) {
   return "維持利率";
 }
 
+function signed(value) {
+  const number = Number(value);
+  return `${number >= 0 ? "+" : ""}${numberFormat.format(number)}`;
+}
+
 function renderTable(scores) {
   const tbody = document.querySelector("#score-rows");
   const query = document.querySelector("#meeting-search").value.trim().toLocaleLowerCase("zh-TW");
   const rows = [...scores].reverse().filter((row) => {
-    const haystack = [row.date, row.action, row.reason, row.dissentReason, eventText(row)].join(" ").toLocaleLowerCase("zh-TW");
+    const haystack = [row.date, row.action, row.assetLabel, row.reason, row.dissentReason, eventText(row)].join(" ").toLocaleLowerCase("zh-TW");
     return haystack.includes(query);
   });
 
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-row">沒有符合的會議</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="empty-row">沒有符合的會議</td></tr>';
   } else {
     tbody.innerHTML = rows.map((row) => {
-      const reason = [row.reason, row.dissentReason && row.dissentReason !== "未偵測到可計分的利率異議" ? row.dissentReason : null]
-        .filter(Boolean).join("；") || "—";
+      const reason = row.reason || "—";
+      const dissent = row.dissentReason || "未偵測到可計分的利率異議";
       const link = row.statementUrl
-        ? `<a class="statement-link" href="${row.statementUrl}" target="_blank" rel="noreferrer">聲明 ↗</a>`
+        ? `<a class="statement-link" href="${escapeHtml(row.statementUrl)}" target="_blank" rel="noreferrer">聲明 ↗</a>`
         : "—";
       return `<tr>
         <td>${displayDate(row.date)}</td>
-        <td><span class="action-text">${eventText(row)}</span></td>
-        <td class="numeric score-cell"><span class="score-value">${numberFormat.format(row.score)}</span></td>
-        <td class="numeric"><span class="ma-value">${row.ma4 == null ? "—" : numberFormat.format(row.ma4)}</span></td>
-        <td class="numeric"><span class="ma-value">${row.ma8 == null ? "—" : numberFormat.format(row.ma8)}</span></td>
+        <td><span class="action-text">${escapeHtml(eventText(row))}</span></td>
+        <td class="numeric"><span class="component-value">${signed(row.weightedRate)}</span><span class="component-detail">${Math.abs(row.basisPoints)} bp · 訊號 ${signed(row.rateSignal)} × 3</span></td>
+        <td class="numeric"><span class="component-value">${signed(row.weightedTone)}</span><span class="component-detail">toneAdj ${signed(row.toneAdj)} · 訊號 ${signed(row.toneSignal)}</span></td>
+        <td><span class="component-value asset-label">${escapeHtml(row.assetLabel || "無新增動作")}</span><span class="component-detail">訊號 ${signed(row.assetSignal)} × 2 = ${signed(row.weightedAsset)}</span></td>
+        <td title="${escapeHtml(dissent)}"><span class="dissent-summary">鷹派 ${numberFormat.format(row.dissentHawkishCount)} · 鴿派 ${numberFormat.format(row.dissentDovishCount)}</span><span class="component-detail dissent-adjustment">調整 ${signed(row.dissentAdj)}</span></td>
+        <td class="numeric score-cell"><span class="score-value">${numberFormat.format(row.score)}</span><span class="component-detail">${row.clamped ? `截斷前 ${numberFormat.format(row.unclampedScore)}` : "0–10 分"}</span></td>
         <td class="reason-cell" title="${escapeHtml(reason)}">${escapeHtml(reason)}</td>
         <td>${link}</td>
       </tr>`;
@@ -166,5 +173,5 @@ main().catch((error) => {
   const message = document.querySelector("#load-error");
   message.textContent = error.message;
   message.hidden = false;
-  document.querySelector("#score-rows").innerHTML = `<tr><td colspan="7" class="empty-row">${escapeHtml(error.message)}</td></tr>`;
+  document.querySelector("#score-rows").innerHTML = `<tr><td colspan="9" class="empty-row">${escapeHtml(error.message)}</td></tr>`;
 });

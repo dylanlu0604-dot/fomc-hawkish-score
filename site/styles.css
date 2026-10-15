@@ -71,7 +71,7 @@ select:focus, input:focus { border-color: #84a9e8; box-shadow: 0 0 0 3px rgb(37 
 .search-control input { width: 228px; padding: 9px 34px 9px 12px; font-size: 11px; }
 .search-control > span:last-child { position: absolute; right: 12px; color: #94a0b0; font-size: 20px; line-height: 1; }
 .table-scroll { overflow: auto; max-height: 600px; border-top: 1px solid var(--line); }
-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+table { width: 100%; min-width: 1180px; border-collapse: collapse; text-align: left; white-space: nowrap; }
 thead { position: sticky; top: 0; z-index: 1; background: #f9fafc; }
 th { padding: 12px 13px; color: #79869a; font-size: 10px; font-weight: 600; }
 td { padding: 11px 13px; border-top: 1px solid #edf0f4; color: #44546a; font-size: 11px; vertical-align: middle; }
@@ -84,7 +84,13 @@ td.numeric { color: #263951; font-variant-numeric: tabular-nums; }
 .ma-value { color: #587086; font-variant-numeric: tabular-nums; }
 .action-text { font-weight: 600; }
 .bp-text { color: #98a3b1; font-size: 10px; margin-left: 3px; }
-.reason-cell { max-width: 390px; overflow: hidden; text-overflow: ellipsis; color: #708096; }
+.reason-cell { max-width: 280px; overflow: hidden; text-overflow: ellipsis; color: #708096; }
+.component-value { display: inline-block; color: #2b4668; font-weight: 700; font-variant-numeric: tabular-nums; }
+.component-detail { display: block; margin-top: 3px; color: #97a2b1; font-size: 9px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.asset-label { color: #52657d; }
+.dissent-summary { color: #52657d; }
+.dissent-adjustment { color: #7f8da0; }
+.formula-note { margin: 13px 0 0; color: #8491a2; font-size: 10px; }
 .statement-link { color: #4c78b8; text-decoration: none; }
 .statement-link:hover { text-decoration: underline; }
 .empty-row { padding: 30px; text-align: center; color: #94a0af; }
