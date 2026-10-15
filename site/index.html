@@ -51,7 +51,7 @@
             <div>
               <div class="eyebrow">POLICY SCORE / TREASURY YIELD</div>
               <h2 id="chart-heading">分數與 2 年期殖利率</h2>
-              <p class="panel-subtitle">分數每次會議更新，會議間沿用最近一次分數。</p>
+              <p class="panel-subtitle">每場 FOMC 會議各顯示一點；殖利率取會議日資料，休市時取前一交易日。</p>
             </div>
             <label class="range-control">顯示區間
               <select id="range-select" aria-label="圖表顯示區間">
@@ -69,7 +69,7 @@
             <span><i class="legend-line legend-yield"></i>2 年期殖利率</span>
           </div>
           <div class="chart-wrap"><canvas id="score-chart" role="img" aria-label="FOMC 原始鷹鴿分數、4 次與 8 次會議移動平均，及 2 年期公債殖利率雙軸圖"></canvas></div>
-          <p class="chart-note">左軸為鷹鴿分數（0–10）；右軸為殖利率（%）。移動平均以最近 4／8 次 FOMC 會議計算，均等權重。</p>
+          <p class="chart-note">每個觀測點代表一場 FOMC 會議。左軸為鷹鴿分數（0–10）；右軸為會議日 2 年期殖利率（%）。移動平均以最近 4／8 次會議計算，均等權重。</p>
         </section>
 
         <section class="panel table-panel" aria-labelledby="table-heading">

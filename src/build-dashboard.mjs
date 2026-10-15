@@ -102,6 +102,8 @@ const yields = yieldRecords.map((row) => ({ date: row.observation_date, rawValue
   .map(({ date, value }) => ({ date, value }))
   .sort((left, right) => left.date.localeCompare(right.date));
 if (!yields.length) throw new Error("No valid DGS2 observations found");
+const firstYieldAtOrAfterHistory = yields.findIndex((row) => row.date >= scores[0].date);
+const yieldHistoryStart = firstYieldAtOrAfterHistory > 0 ? firstYieldAtOrAfterHistory - 1 : 0;
 
 const latestScore = scores.at(-1);
 const latestYield = yields.at(-1);
@@ -116,7 +118,7 @@ const dashboard = {
     scoreCount: scores.length,
   },
   scores,
-  yields: yields.filter((row) => row.date >= scores[0].date),
+  yields: yields.slice(yieldHistoryStart),
 };
 
 if (!dashboard.yields.length) throw new Error("No yield observations overlap the FOMC score history");

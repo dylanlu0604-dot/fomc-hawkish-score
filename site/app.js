@@ -61,23 +61,31 @@ function createChart(dashboard) {
   if (!window.Chart) throw new Error("圖表元件載入失敗，請檢查網路連線後重新整理。");
 
   const scores = dashboard.scores;
-  let scoreIndex = -1;
-  const series = dashboard.yields.map((observation) => {
-    while (scoreIndex + 1 < scores.length && scores[scoreIndex + 1].date <= observation.date) scoreIndex += 1;
-    if (scoreIndex < 0) return null;
-    const date = Date.parse(`${observation.date}T00:00:00Z`);
-    const row = scores[scoreIndex];
-    return { x: date, original: row.score, ma4: row.ma4, ma8: row.ma8, yield: observation.value };
+  const yields = dashboard.yields;
+  let yieldIndex = -1;
+  const series = scores.map((row) => {
+    while (yieldIndex + 1 < yields.length && yields[yieldIndex + 1].date <= row.date) yieldIndex += 1;
+    const observation = yields[yieldIndex];
+    if (!observation) return null;
+    return {
+      x: Date.parse(`${row.date}T00:00:00Z`),
+      meetingDate: row.date,
+      original: row.score,
+      ma4: row.ma4,
+      ma8: row.ma8,
+      yield: observation.value,
+      yieldDate: observation.date,
+    };
   }).filter(Boolean);
 
   const chart = new Chart(document.querySelector("#score-chart"), {
     type: "line",
     data: {
       datasets: [
-        { label: "原始分數", data: series.map((row) => ({ x: row.x, y: row.original })), yAxisID: "score", borderColor: "#2563eb", borderWidth: 1.35, borderDash: [5, 4], pointRadius: 0, stepped: "before", fill: false, order: 3 },
-        { label: "4 次會議均線", data: series.map((row) => ({ x: row.x, y: row.ma4 })), yAxisID: "score", borderColor: "#0f9f9a", borderWidth: 2, pointRadius: 0, stepped: "before", fill: false, order: 2 },
-        { label: "8 次會議均線", data: series.map((row) => ({ x: row.x, y: row.ma8 })), yAxisID: "score", borderColor: "#7c5ce7", borderWidth: 2, pointRadius: 0, stepped: "before", fill: false, order: 1 },
-        { label: "2 年期殖利率", data: series.map((row) => ({ x: row.x, y: row.yield })), yAxisID: "yield", borderColor: "#e18a3b", borderWidth: 1.8, pointRadius: 0, tension: 0.12, fill: false, order: 4 },
+        { label: "原始分數", data: series.map((row) => ({ x: row.x, y: row.original })), yAxisID: "score", borderColor: "#2563eb", borderWidth: 1.35, borderDash: [5, 4], pointRadius: 2, fill: false, order: 3 },
+        { label: "4 次會議均線", data: series.map((row) => ({ x: row.x, y: row.ma4 })), yAxisID: "score", borderColor: "#0f9f9a", borderWidth: 2, pointRadius: 0, fill: false, order: 2 },
+        { label: "8 次會議均線", data: series.map((row) => ({ x: row.x, y: row.ma8 })), yAxisID: "score", borderColor: "#7c5ce7", borderWidth: 2, pointRadius: 0, fill: false, order: 1 },
+        { label: "2 年期殖利率", data: series.map((row) => ({ x: row.x, y: row.yield })), yAxisID: "yield", borderColor: "#e18a3b", borderWidth: 1.8, pointRadius: 1.5, tension: 0, fill: false, order: 4 },
       ],
     },
     options: {
@@ -97,7 +105,13 @@ function createChart(dashboard) {
           bodyFont: { family: "DM Sans, Noto Sans TC, sans-serif", size: 11 },
           callbacks: {
             title(items) { return items.length ? displayDate(new Date(items[0].parsed.x).toISOString().slice(0, 10)) : ""; },
-            label(item) { return `${item.dataset.label}: ${numberFormat.format(item.parsed.y)}${item.dataset.yAxisID === "yield" ? "%" : ""}`; },
+            label(item) {
+              const row = series[item.dataIndex];
+              const sampledDate = item.dataset.yAxisID === "yield" && row.yieldDate !== row.meetingDate
+                ? `（資料日 ${displayDate(row.yieldDate)}）`
+                : "";
+              return `${item.dataset.label}: ${numberFormat.format(item.parsed.y)}${item.dataset.yAxisID === "yield" ? `%${sampledDate}` : ""}`;
+            },
           },
         },
       },
