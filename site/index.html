@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fa">
+    <meta name="description" content="美國 FOMC 鷹鴿分數與 2 年期美國公債殖利率互動圖表及歷次會議計分表。">
+    <title>美國 FOMC 鷹鴿分數</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="美國 FOMC 鷹鴿分數首頁">
+          <span class="brand-mark" aria-hidden="true">F</span>
+          <span>MACRO / POLICY</span>
+        </a>
+        <span class="topbar-note">美國聯準會 · FOMC</span>
+      </header>
+
+      <main id="top">
+        <section class="intro">
+          <div class="eyebrow"><span class="live-dot"></span> 美國貨幣政策追蹤</div>
+          <h1>FOMC 鷹鴿分數</h1>
+          <p>追蹤每次利率決議的政策語氣，並與美國 2 年期公債殖利率對照。</p>
+        </section>
+
+        <section class="summary-grid" aria-label="最新資料摘要">
+          <article class="summary-card summary-score">
+            <div class="card-label">最新會議分數 <span class="info-dot" title="沿用既有 v4 加權計分公式，分數範圍 0–10">i</span></div>
+            <div class="card-main"><strong id="latest-score">—</strong><span id="latest-action" class="action-pill">讀取中</span></div>
+            <div class="card-foot" id="latest-meeting">—</div>
+          </article>
+          <article class="summary-card">
+            <div class="card-label">2 年期公債殖利率</div>
+            <div class="card-main"><strong id="latest-yield">—</strong><span class="unit">%</span></div>
+            <div class="card-foot" id="latest-yield-date">FRED · DGS2</div>
+          </article>
+          <article class="summary-card">
+            <div class="card-label">歷次 FOMC 計分</div>
+            <div class="card-main"><strong id="meeting-count">—</strong><span class="unit">場會議</span></div>
+            <div class="card-foot">僅新會議由 AI 更新評分</div>
+          </article>
+        </section>
+
+        <section class="panel chart-panel" aria-labelledby="chart-heading">
+          <div class="panel-heading chart-heading-row">
+            <div>
+              <div class="eyebrow">POLICY SCORE / TREASURY YIELD</div>
+              <h2 id="chart-heading">分數與 2 年期殖利率</h2>
+              <p class="panel-subtitle">分數每次會議更新，會議間沿用最近一次分數。</p>
+            </div>
+            <label class="range-control">顯示區間
+              <select id="range-select" aria-label="圖表顯示區間">
+                <option value="1">近 1 年</option>
+                <option value="5">近 5 年</option>
+                <option value="10">近 10 年</option>
+                <option value="all" selected>全部</option>
+              </select>
+            </label>
+          </div>
+          <div class="chart-legend" aria-label="圖表資料線">
+            <span><i class="legend-line legend-score"></i>原始分數</span>
+            <span><i class="legend-line legend-ma4"></i>4 次會議均線</span>
+            <span><i class="legend-line legend-ma8"></i>8 次會議均線</span>
+            <span><i class="legend-line legend-yield"></i>2 年期殖利率</span>
+          </div>
+          <div class="chart-wrap"><canvas id="score-chart" role="img" aria-label="FOMC 原始鷹鴿分數、4 次與 8 次會議移動平均，及 2 年期公債殖利率雙軸圖"></canvas></div>
+          <p class="chart-note">左軸為鷹鴿分數（0–10）；右軸為殖利率（%）。移動平均以最近 4／8 次 FOMC 會議計算，均等權重。</p>
+        </section>
+
+        <section class="panel table-panel" aria-labelledby="table-heading">
+          <div class="panel-heading table-heading-row">
+            <div>
+              <div class="eyebrow">MEETING HISTORY</div>
+              <h2 id="table-heading">會議計分表</h2>
+            </div>
+            <label class="search-control"><span class="sr-only">搜尋會議</span>
+              <input id="meeting-search" type="search" placeholder="搜尋日期、決議或理由" autocomplete="off">
+              <span aria-hidden="true">⌕</span>
+            </label>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr><th scope="col">會議日期</th><th scope="col">利率決議</th><th scope="col" class="numeric">原始分數</th><th scope="col" class="numeric">4 次均線</th><th scope="col" class="numeric">8 次均線</th><th scope="col">評分摘要</th><th scope="col">來源</th></tr>
+              </thead>
+              <tbody id="score-rows"><tr><td colspan="7" class="empty-row">正在載入計分資料…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="table-footer"><span id="table-count">—</span><span>最新會議優先</span></div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-method"><strong>計分方式</strong><span>沿用 v4 加權公式；4／8 次均線按會議計算。AI 僅評最新一場新會議，不重算歷史分數。</span></div>
+        <div class="footer-sources">
+          <span>殖利率來源：Board of Governors of the Federal Reserve System via <a href="https://fred.stlouisfed.org/series/DGS2" target="_blank" rel="noreferrer">FRED DGS2</a>（每日、百分比）。</span>
+          <span>評分及聲明來源：<a href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" target="_blank" rel="noreferrer">Federal Reserve 官方 FOMC 日程與聲明</a>。</span>
+        </div>
+        <div class="footer-bottom"><span>資料更新時間 <time id="updated-at">—</time></span><span>僅供資訊參考</span></div>
+      </footer>
+    </div>
+    <div id="load-error" class="load-error" role="alert" hidden></div>
+  </body>
+</html>

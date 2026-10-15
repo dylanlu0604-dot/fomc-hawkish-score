@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: update-latest-fomc-score
+  group: refresh-fomc-dashboard-data
   cancel-in-progress: false
 
 jobs:
@@ -36,14 +36,20 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
 
-      - name: Commit updated statement and score
+      - name: Refresh 2-year Treasury yield source
+        run: npm run update:yields
+
+      - name: Build dashboard data
+        run: npm run build:dashboard
+
+      - name: Commit updated source data and dashboard
         run: |
           if git diff --quiet; then
-            echo "No FOMC data changes."
+            echo "No FOMC or DGS2 data changes."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/
-          git commit -m "Update latest FOMC statement and score"
+          git add data/ site/data/dashboard.json
+          git commit -m "Refresh FOMC dashboard data"
           git push

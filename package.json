@@ -5,7 +5,9 @@
   "type": "module",
   "description": "Fetch the latest official FOMC statement and score only that meeting with Anthropic.",
   "scripts": {
-    "update": "node src/update-latest.mjs"
+    "update": "node src/update-latest.mjs",
+    "update:yields": "node src/update-dgs2.mjs",
+    "build:dashboard": "node src/build-dashboard.mjs"
   },
   "dependencies": {
     "cheerio": "^1.1.2"

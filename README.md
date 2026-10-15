@@ -29,6 +29,22 @@ score = clamp(5 + 3 × rateSignal + toneSignal + 2 × assetSignal + dissentAdj, 
 - data/statements.jsonl：已抓取的官方聲明稿、網址與 SHA-256。
 - data/ai_scoring_audit.jsonl：新評分的模型、提示版本、來源雜湊與評分時間；初始歷史分數只會標記為保留既有分數。
 - docs/scoring-methodology-zh-TW.md：原有 v4 公式及判斷規則。
+- data/us_2y_yield.csv：FRED DGS2 每日 2 年期美國公債殖利率。
+- site/index.html：FOMC 圖表與計分表頁面；圖表使用原始分數及 4／8 次會議移動平均。
+
+## 圖表頁面與 GitHub Pages
+
+頁面把分數按會議日期延續至下一次會議，並與每日 DGS2 殖利率使用雙軸呈現。4／8 次均線是最近 4／8 場 FOMC 會議的等權平均。表格保留完整分數、決議、摘要及官方聲明連結。
+
+`npm run update:yields` 會更新 FRED DGS2；`npm run build:dashboard` 會從分數、聲明及殖利率來源檔產生 `site/data/dashboard.json`。GitHub Actions 會更新資料；只有在 repository variable `PUBLISH_GITHUB_PAGES=true` 時才會部署頁面。首次發布前，請在 repository 的 **Settings → Pages → Build and deployment → Source** 選擇 **GitHub Actions**，再啟用該 variable。GitHub Pages 通常會讓網站可公開瀏覽；請先確認 repository 及網站的可見性符合預期。
+
+本機產生頁面資料後，可用任一靜態伺服器從 `site/` 預覽：
+
+    npm run update:yields
+    npm run build:dashboard
+    npx serve site
+
+殖利率來源：Board of Governors of the Federal Reserve System via [FRED DGS2](https://fred.stlouisfed.org/series/DGS2)，每日百分比、非季節調整。
 
 ## 本機執行
 
