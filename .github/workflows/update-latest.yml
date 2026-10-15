@@ -33,8 +33,8 @@ jobs:
       - name: Fetch latest statement and score only if needed
         run: npm run update
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
 
       - name: Refresh 2-year Treasury yield source
         run: npm run update:yields

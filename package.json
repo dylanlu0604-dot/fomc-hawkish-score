@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Fetch the latest official FOMC statement and score only that meeting with Anthropic.",
+  "description": "Fetch the latest official FOMC statement and score only that meeting with OpenAI GPT-6 Luna.",
   "scripts": {
     "update": "node src/update-latest.mjs",
     "update:yields": "node src/update-dgs2.mjs",

@@ -1,6 +1,6 @@
 # FOMC 鷹派/鴿派分數公式修訂說明
 
-本文件記錄既有 FOMC v4 計分規則與修訂理由，適用於本 repository 的歷史分數。歷史 toneAdj 由人工判讀；自動更新的新會議改由 Anthropic 依本文件的 -2 至 +2 量尺產生 toneAdj，再沿用相同加權公式。完整分數資料見 `../data/fomc_hawkish_scores.csv`；舊版完整資料未包含在這個獨立 repository。
+本文件記錄既有 FOMC v4 計分規則與修訂理由，適用於本 repository 的歷史分數。歷史 toneAdj 由人工判讀；自動更新的新會議改由 OpenAI GPT-6 Luna 依本文件的 -2 至 +2 量尺產生 toneAdj，再沿用相同加權公式。完整分數資料見 `../data/fomc_hawkish_scores.csv`；舊版完整資料未包含在這個獨立 repository。
 
 ## 1. 原公式的問題
 
