@@ -71,7 +71,7 @@ function createChart(dashboard) {
       x: Date.parse(`${row.date}T00:00:00Z`),
       meetingDate: row.date,
       original: row.score,
-      smoothed: row.smoothed,
+      smoothedMaxmin: row.smoothed_maxmin,
       yield: observation.value,
       yieldDate: observation.date,
     };
@@ -82,7 +82,7 @@ function createChart(dashboard) {
     data: {
       datasets: [
         { label: "原始分數", data: series.map((row) => ({ x: row.x, y: row.original })), yAxisID: "score", borderColor: "#2563eb", borderWidth: 1.35, borderDash: [5, 4], pointRadius: 2, fill: false, order: 3 },
-        { label: "平滑數據", data: series.map((row) => ({ x: row.x, y: row.smoothed })), yAxisID: "score", borderColor: "#0f9f9a", borderWidth: 2.2, pointRadius: 0, fill: false, order: 2 },
+        { label: "平滑數據（smoothed_maxmin）", data: series.map((row) => ({ x: row.x, y: row.smoothedMaxmin })), yAxisID: "score", borderColor: "#0f9f9a", borderWidth: 2.2, pointRadius: 0, fill: false, order: 2 },
         { label: "2 年期殖利率", data: series.map((row) => ({ x: row.x, y: row.yield })), yAxisID: "yield", borderColor: "#e18a3b", borderWidth: 1.8, pointRadius: 1.5, tension: 0, fill: false, order: 4 },
       ],
     },
