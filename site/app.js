@@ -171,15 +171,16 @@ function createChart(dashboard) {
 
 function populateSummary(dashboard) {
   const latestScore = dashboard.scores.at(-1);
+  const latestYield = dashboard.yields.at(-1);
   document.querySelector("#latest-score").textContent = numberFormat.format(latestScore.score);
   document.querySelector("#latest-meeting").textContent = `會議日期 ${displayDate(latestScore.date)} · 0–100 分`;
   const action = document.querySelector("#latest-action");
   action.textContent = latestScore.action;
   if (latestScore.action === "升息") action.classList.add("up");
   if (latestScore.action === "降息") action.classList.add("down");
-  document.querySelector("#latest-yield").textContent = numberFormat.format(dashboard.metadata.latestYield);
-  document.querySelector("#latest-yield-date").textContent = `資料日期 ${displayDate(dashboard.metadata.latestYieldDate)} · FRED DGS2`;
-  document.querySelector("#meeting-count").textContent = numberFormat.format(dashboard.metadata.scoreCount);
+  document.querySelector("#latest-yield").textContent = numberFormat.format(latestYield.value);
+  document.querySelector("#latest-yield-date").textContent = `資料日期 ${displayDate(latestYield.date)} · FRED DGS2`;
+  document.querySelector("#meeting-count").textContent = numberFormat.format(dashboard.scores.length);
   document.querySelector("#updated-at").textContent = new Intl.DateTimeFormat("zh-TW", {
     year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Taipei",
   }).format(new Date(dashboard.metadata.generatedAt));

@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { load } from "cheerio";
+import { rebuildSmoothedColumn } from "./smoothing.mjs";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const scorePath = path.join(rootDir, "data", "fomc_hawkish_scores.csv");
@@ -31,9 +32,8 @@ const assetSignals = new Map([
 export const scoreHeaders = [
   "id", "dateKey", "action", "bp", "rateSignal", "toneAdj", "toneSignal", "assetLabel",
   "assetSignal", "toneReason", "dissentHawkishCount", "dissentDovishCount", "dissentAdj",
-  "dissentReason", "score", "formulaVersion", "w_rate", "w_tone", "w_asset",
-  "rateSignalExact", "weightedRate", "weightedTone", "weightedAsset", "baseScore",
-  "unclampedScore", "scoreFormula", "clamped",
+  "dissentReason", "score", "smoothed", "formulaVersion", "w_rate", "w_tone", "w_asset",
+  "weightedRate", "weightedTone", "weightedAsset", "unclampedScore", "clamped",
 ];
 
 function round2(value) {
@@ -400,17 +400,15 @@ export function makeScoreRow(statement, aiScore, headers) {
     dissentAdj,
     dissentReason: dissent.dissentReason,
     score,
+    smoothed: "",
     formulaVersion,
     w_rate: weights.rate,
     w_tone: weights.tone,
     w_asset: weights.asset,
-    rateSignalExact: round2(rateSignal),
     weightedRate: round2(weightedRate),
     weightedTone: round2(weightedTone),
     weightedAsset: round2(weightedAsset),
-    baseScore,
     unclampedScore: round2(unclampedScore),
-    scoreFormula: score,
     clamped: unclampedScore < 0 || unclampedScore > 10 * scoreScale ? "是" : "否",
   };
 
@@ -476,7 +474,6 @@ async function main() {
     const nextScoreRow = makeScoreRow(statement, aiScore, headers);
     if (existingIndex >= 0) rows[existingIndex] = nextScoreRow;
     else rows.push(nextScoreRow);
-    await fs.writeFile(scorePath, serializeCsv([headers, ...rows]), "utf8");
     auditRecords.push({
       id: statement.id,
       dateKey: statement.dateKey,
@@ -494,6 +491,9 @@ async function main() {
     });
     status = existingIndex >= 0 ? "rescored_latest_changed_statement" : "scored_new_latest_meeting";
   }
+
+  const smoothedScoreData = rebuildSmoothedColumn(headers, rows);
+  await fs.writeFile(scorePath, serializeCsv([smoothedScoreData.headers, ...smoothedScoreData.rows]), "utf8");
 
   if (auditRecords.length > 0) {
     await writeJsonLinesIfChanged(auditPath, auditRecords);

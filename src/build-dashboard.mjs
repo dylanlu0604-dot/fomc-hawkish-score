@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { rebuildSmoothedColumn } from "./smoothing.mjs";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const scoresPath = path.join(rootDir, "data", "fomc_hawkish_scores.csv");
@@ -8,7 +9,6 @@ const statementsPath = path.join(rootDir, "data", "statements.jsonl");
 const yieldsPath = path.join(rootDir, "data", "us_2y_yield.csv");
 const outputDir = path.join(rootDir, "site", "data");
 const outputPath = path.join(outputDir, "dashboard.json");
-const yieldSource = "https://fred.stlouisfed.org/series/DGS2";
 
 function parseCsv(text) {
   const rows = [];
@@ -53,19 +53,35 @@ function recordsFromCsv(text) {
   return rows.map((row) => Object.fromEntries(headers.map((header, index) => [header, row[index] ?? ""])));
 }
 
+function serializeCsv(rows) {
+  return rows.map((row) => row.map((value) => {
+    const text = String(value ?? "");
+    return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+  }).join(",")).join("\n") + "\n";
+}
+
 const [scoreText, statementText, yieldText] = await Promise.all([
   fs.readFile(scoresPath, "utf8"),
   fs.readFile(statementsPath, "utf8"),
   fs.readFile(yieldsPath, "utf8"),
 ]);
 
+const parsedScoreRows = parseCsv(scoreText);
+const sourceScoreHeaders = parsedScoreRows.shift();
+if (!sourceScoreHeaders) throw new Error("Score CSV is empty");
+const redundantScoreColumns = new Set(["rateSignalExact", "baseScore", "scoreFormula"]);
+const scoreHeaders = sourceScoreHeaders.filter((header) => !redundantScoreColumns.has(header));
+const retainedScoreRows = parsedScoreRows.map((row) => scoreHeaders.map((header) => row[sourceScoreHeaders.indexOf(header)] ?? ""));
+const scoreData = rebuildSmoothedColumn(scoreHeaders, retainedScoreRows);
+const normalizedScoreText = serializeCsv([scoreData.headers, ...scoreData.rows]);
+if (normalizedScoreText !== scoreText) await fs.writeFile(scoresPath, normalizedScoreText, "utf8");
+
 const statementUrls = new Map(statementText.split(/\r?\n/).filter(Boolean).map((line) => {
   const statement = JSON.parse(line);
   return [statement.id, statement.sourceUrl];
 }));
 
-const scores = recordsFromCsv(scoreText).map((row) => ({
-  id: row.id,
+const scores = recordsFromCsv(normalizedScoreText).map((row) => ({
   date: row.dateKey,
   action: row.action,
   basisPoints: Number(row.bp),
@@ -81,25 +97,16 @@ const scores = recordsFromCsv(scoreText).map((row) => ({
   dissentDovishCount: Number(row.dissentDovishCount),
   dissentAdj: Number(row.dissentAdj),
   score: Number(row.score),
+  smoothed: row.smoothed === "" ? null : Number(row.smoothed),
   unclampedScore: Number(row.unclampedScore),
   clamped: row.clamped === "是",
   reason: row.toneReason,
   dissentReason: row.dissentReason,
-  formulaVersion: row.formulaVersion,
   statementUrl: statementUrls.get(row.id) ?? `https://www.federalreserve.gov/newsevents/pressreleases/monetary${row.id}a.htm`,
 })).filter((row) => /^\d{4}-\d{2}-\d{2}$/.test(row.date) && Number.isFinite(row.score))
-  .sort((left, right) => left.date.localeCompare(right.date) || left.id.localeCompare(right.id));
+  .sort((left, right) => left.date.localeCompare(right.date));
 
 if (!scores.length) throw new Error("No valid FOMC score rows found");
-for (const [index, row] of scores.entries()) {
-  if (index < 7) {
-    row.smoothed = null;
-    continue;
-  }
-  const latestThreeMean = scores.slice(index - 2, index + 1).reduce((sum, item) => sum + item.score, 0) / 3;
-  const latestEightMean = scores.slice(index - 7, index + 1).reduce((sum, item) => sum + item.score, 0) / 8;
-  row.smoothed = Number((latestThreeMean * 0.6 + latestEightMean * 0.4).toFixed(2));
-}
 
 const yieldRecords = recordsFromCsv(yieldText);
 const yields = yieldRecords.map((row) => ({ date: row.observation_date, rawValue: row.DGS2, value: Number(row.DGS2) }))
@@ -110,17 +117,9 @@ if (!yields.length) throw new Error("No valid DGS2 observations found");
 const firstYieldAtOrAfterHistory = yields.findIndex((row) => row.date >= scores[0].date);
 const yieldHistoryStart = firstYieldAtOrAfterHistory > 0 ? firstYieldAtOrAfterHistory - 1 : 0;
 
-const latestScore = scores.at(-1);
-const latestYield = yields.at(-1);
 const dashboard = {
   metadata: {
     generatedAt: new Date().toISOString(),
-    latestMeeting: latestScore.date,
-    latestYieldDate: latestYield.date,
-    latestYield: latestYield.value,
-    yieldSource,
-    yieldSeries: "DGS2",
-    scoreCount: scores.length,
   },
   scores,
   yields: yields.slice(yieldHistoryStart),
