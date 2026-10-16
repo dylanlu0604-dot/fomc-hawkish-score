@@ -64,8 +64,8 @@ export function rebuildSmoothedColumns(headers, sourceRows) {
     return { headers: nextHeaders, rows };
   }
 
-  const p20 = percentile(smoothedValues, 0.2);
-  const p80 = percentile(smoothedValues, 0.8);
+  const p10 = percentile(smoothedValues, 0.1);
+  const p90 = percentile(smoothedValues, 0.9);
   for (const row of rows) {
     const smoothed = row[smoothedIndex];
     if (smoothed === "") {
@@ -73,9 +73,9 @@ export function rebuildSmoothedColumns(headers, sourceRows) {
       continue;
     }
 
-    const scaled = p80 === p20
+    const scaled = p90 === p10
       ? 50
-      : 30 + (Number(smoothed) - p20) * 40 / (p80 - p20);
+      : 20 + (Number(smoothed) - p10) * 60 / (p90 - p10);
     row[smoothedMaxminIndex] = Math.max(0, Math.min(100, scaled)).toFixed(2);
   }
 
