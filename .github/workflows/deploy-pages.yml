@@ -5,7 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
   workflow_run:
-    workflows: ["Update latest FOMC score"]
+    workflows:
+      - "Update latest FOMC score"
+      - "Backfill historical FOMC scores 2000-2005"
     types: [completed]
     branches: [main]
 

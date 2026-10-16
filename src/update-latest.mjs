@@ -27,7 +27,7 @@ const assetSignals = new Map([
   ["持續QE（無新增動作）", 0],
 ]);
 
-const scoreHeaders = [
+export const scoreHeaders = [
   "id", "dateKey", "action", "bp", "rateSignal", "toneAdj", "toneSignal", "assetLabel",
   "assetSignal", "toneReason", "dissentHawkishCount", "dissentDovishCount", "dissentAdj",
   "dissentReason", "score", "formulaVersion", "w_rate", "w_tone", "w_asset",
@@ -43,11 +43,11 @@ function clamp(value, low, high) {
   return Math.max(low, Math.min(high, value));
 }
 
-function normalizeWhitespace(value) {
+export function normalizeWhitespace(value) {
   return String(value ?? "").replace(/\s+/g, " ").trim();
 }
 
-function parseCsv(text) {
+export function parseCsv(text) {
   const rows = [];
   let row = [];
   let field = "";
@@ -91,11 +91,11 @@ function csvCell(value) {
   return /[",\r\n]/.test(text) ? '"' + text.replaceAll('"', '""') + '"' : text;
 }
 
-function serializeCsv(rows) {
+export function serializeCsv(rows) {
   return rows.map((row) => row.map(csvCell).join(",")).join("\n") + "\n";
 }
 
-async function readJsonLines(filePath) {
+export async function readJsonLines(filePath) {
   try {
     const text = await fs.readFile(filePath, "utf8");
     return text.split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line));
@@ -105,7 +105,7 @@ async function readJsonLines(filePath) {
   }
 }
 
-async function writeJsonLinesIfChanged(filePath, records) {
+export async function writeJsonLinesIfChanged(filePath, records) {
   const nextText = records.map((record) => JSON.stringify(record)).join("\n") + (records.length ? "\n" : "");
   let currentText = "";
   try {
@@ -116,7 +116,7 @@ async function writeJsonLinesIfChanged(filePath, records) {
   if (currentText !== nextText) await fs.writeFile(filePath, nextText, "utf8");
 }
 
-async function fetchHtml(url) {
+export async function fetchHtml(url) {
   const response = await fetch(url, {
     headers: {
       "User-Agent": "fomc-hawkish-score/1.0 (official-policy-statement archive)",
@@ -293,7 +293,7 @@ function validateAiScore(value) {
   };
 }
 
-async function scoreWithOpenAI(statement, previous) {
+export async function scoreWithOpenAI(statement, previous) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is required when a new or changed latest statement needs scoring");
   const model = process.env.OPENAI_MODEL || "gpt-6-luna";
@@ -369,7 +369,7 @@ async function scoreWithOpenAI(statement, previous) {
   return { aiScore, model };
 }
 
-function makeScoreRow(statement, aiScore, headers) {
+export function makeScoreRow(statement, aiScore, headers) {
   const rateSignal = clamp((aiScore.action === "升息" ? aiScore.bp : aiScore.action === "降息" ? -aiScore.bp : 0) / 75, -1, 1);
   const toneSignal = aiScore.toneAdj / 2;
   const assetSignal = assetSignals.get(aiScore.assetLabel);
@@ -508,7 +508,9 @@ async function main() {
   }));
 }
 
-main().catch((error) => {
-  console.error(error.stack || error.message || String(error));
-  process.exitCode = 1;
-});
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(error.stack || error.message || String(error));
+    process.exitCode = 1;
+  });
+}
