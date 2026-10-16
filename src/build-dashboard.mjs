@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { rebuildSmoothedColumn } from "./smoothing.mjs";
+import { rebuildSmoothedColumns } from "./smoothing.mjs";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const scoresPath = path.join(rootDir, "data", "fomc_hawkish_scores.csv");
@@ -72,7 +72,7 @@ if (!sourceScoreHeaders) throw new Error("Score CSV is empty");
 const redundantScoreColumns = new Set(["rateSignalExact", "baseScore", "scoreFormula"]);
 const scoreHeaders = sourceScoreHeaders.filter((header) => !redundantScoreColumns.has(header));
 const retainedScoreRows = parsedScoreRows.map((row) => scoreHeaders.map((header) => row[sourceScoreHeaders.indexOf(header)] ?? ""));
-const scoreData = rebuildSmoothedColumn(scoreHeaders, retainedScoreRows);
+const scoreData = rebuildSmoothedColumns(scoreHeaders, retainedScoreRows);
 const normalizedScoreText = serializeCsv([scoreData.headers, ...scoreData.rows]);
 if (normalizedScoreText !== scoreText) await fs.writeFile(scoresPath, normalizedScoreText, "utf8");
 
@@ -98,6 +98,7 @@ const scores = recordsFromCsv(normalizedScoreText).map((row) => ({
   dissentAdj: Number(row.dissentAdj),
   score: Number(row.score),
   smoothed: row.smoothed === "" ? null : Number(row.smoothed),
+  smoothed_maxmin: row.smoothed_maxmin === "" ? null : Number(row.smoothed_maxmin),
   unclampedScore: Number(row.unclampedScore),
   clamped: row.clamped === "是",
   reason: row.toneReason,

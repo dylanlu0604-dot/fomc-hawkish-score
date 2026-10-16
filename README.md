@@ -26,7 +26,7 @@ GitHub Actions 每天 08:30（台北時間）檢查聯準會官方日程。最�
 
 主要資料檔：
 
-- `data/fomc_hawkish_scores.csv`：歷史及最新會議評分明細，包含 `smoothed` 欄；平滑數據依 60% 最近 3 場均線＋40% 最近 8 場均線計算，前 7 場留白。
+- `data/fomc_hawkish_scores.csv`：歷史及最新會議評分明細，包含 `smoothed` 與 `smoothed_maxmin` 欄。`smoothed` 依 60% 最近 3 場均線＋40% 最近 8 場均線計算，前 7 場留白。`smoothed_maxmin` 以全部有效平滑值的第 20／80 百分位映射至 30／70，再限制於 0–100；百分位採線性插值。若兩個百分位相同，則設為 50。新增會議後會依完整歷史重新校準此欄。
 - `data/statements.jsonl`：官方聲明、來源網址與 SHA-256。
 - `data/ai_scoring_audit.jsonl`：AI 評分模型、提示版本、來源雜湊與時間紀錄。
 - `data/us_2y_yield.csv`：FRED DGS2 2 年期美國公債殖利率。

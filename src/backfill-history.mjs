@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { load } from "cheerio";
-import { rebuildSmoothedColumn } from "./smoothing.mjs";
+import { rebuildSmoothedColumns } from "./smoothing.mjs";
 import {
   fetchHtml,
   makeScoreRow,
@@ -188,7 +188,7 @@ async function backfillYear(year) {
     console.log(JSON.stringify({ year, id: statement.id, status: "scored", score: Number(scoreRow[headers.indexOf("score")]) }));
   }
 
-  const smoothedScoreData = rebuildSmoothedColumn(headers, rows);
+  const smoothedScoreData = rebuildSmoothedColumns(headers, rows);
   await fs.writeFile(scorePath, serializeCsv([smoothedScoreData.headers, ...smoothedScoreData.rows]), "utf8");
   statementRecords.sort((left, right) => left.id.localeCompare(right.id));
   auditRecords.sort((left, right) => left.id.localeCompare(right.id) || String(left.scoredAt).localeCompare(String(right.scoredAt)));

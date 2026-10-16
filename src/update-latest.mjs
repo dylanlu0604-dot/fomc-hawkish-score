@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { load } from "cheerio";
-import { rebuildSmoothedColumn } from "./smoothing.mjs";
+import { rebuildSmoothedColumns } from "./smoothing.mjs";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const scorePath = path.join(rootDir, "data", "fomc_hawkish_scores.csv");
@@ -32,7 +32,7 @@ const assetSignals = new Map([
 export const scoreHeaders = [
   "id", "dateKey", "action", "bp", "rateSignal", "toneAdj", "toneSignal", "assetLabel",
   "assetSignal", "toneReason", "dissentHawkishCount", "dissentDovishCount", "dissentAdj",
-  "dissentReason", "score", "smoothed", "formulaVersion", "w_rate", "w_tone", "w_asset",
+  "dissentReason", "score", "smoothed", "smoothed_maxmin", "formulaVersion", "w_rate", "w_tone", "w_asset",
   "weightedRate", "weightedTone", "weightedAsset", "unclampedScore", "clamped",
 ];
 
@@ -401,6 +401,7 @@ export function makeScoreRow(statement, aiScore, headers) {
     dissentReason: dissent.dissentReason,
     score,
     smoothed: "",
+    smoothed_maxmin: "",
     formulaVersion,
     w_rate: weights.rate,
     w_tone: weights.tone,
@@ -492,7 +493,7 @@ async function main() {
     status = existingIndex >= 0 ? "rescored_latest_changed_statement" : "scored_new_latest_meeting";
   }
 
-  const smoothedScoreData = rebuildSmoothedColumn(headers, rows);
+  const smoothedScoreData = rebuildSmoothedColumns(headers, rows);
   await fs.writeFile(scorePath, serializeCsv([smoothedScoreData.headers, ...smoothedScoreData.rows]), "utf8");
 
   if (auditRecords.length > 0) {
