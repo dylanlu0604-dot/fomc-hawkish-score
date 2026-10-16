@@ -38,11 +38,11 @@ function renderTable(scores) {
       return `<tr>
         <td>${displayDate(row.date)}</td>
         <td><span class="action-text">${escapeHtml(eventText(row))}</span></td>
-        <td class="numeric"><span class="component-value">${signed(row.weightedRate)}</span><span class="component-detail">${Math.abs(row.basisPoints)} bp · 訊號 ${signed(row.rateSignal)} × 3</span></td>
-        <td class="numeric"><span class="component-value">${signed(row.weightedTone)}</span><span class="component-detail">toneAdj ${signed(row.toneAdj)} · 訊號 ${signed(row.toneSignal)}</span></td>
-        <td><span class="component-value asset-label">${escapeHtml(row.assetLabel || "無新增動作")}</span><span class="component-detail">訊號 ${signed(row.assetSignal)} × 2 = ${signed(row.weightedAsset)}</span></td>
+        <td class="numeric"><span class="component-value">${signed(row.weightedRate)}</span><span class="component-detail">${Math.abs(row.basisPoints)} bp · 訊號 ${signed(row.rateSignal)} × 30</span></td>
+        <td class="numeric"><span class="component-value">${signed(row.weightedTone)}</span><span class="component-detail">toneAdj ${signed(row.toneAdj)} · 訊號 ${signed(row.toneSignal)} × 10</span></td>
+        <td><span class="component-value asset-label">${escapeHtml(row.assetLabel || "無新增動作")}</span><span class="component-detail">訊號 ${signed(row.assetSignal)} × 20 = ${signed(row.weightedAsset)}</span></td>
         <td title="${escapeHtml(dissent)}"><span class="dissent-summary">鷹派 ${numberFormat.format(row.dissentHawkishCount)} · 鴿派 ${numberFormat.format(row.dissentDovishCount)}</span><span class="component-detail dissent-adjustment">調整 ${signed(row.dissentAdj)}</span></td>
-        <td class="numeric score-cell"><span class="score-value">${numberFormat.format(row.score)}</span><span class="component-detail">${row.clamped ? `截斷前 ${numberFormat.format(row.unclampedScore)}` : "0–10 分"}</span></td>
+        <td class="numeric score-cell"><span class="score-value">${numberFormat.format(row.score)}</span><span class="component-detail">${row.clamped ? `截斷前 ${numberFormat.format(row.unclampedScore)}` : "0–100 分"}</span></td>
         <td class="reason-cell" title="${escapeHtml(reason)}">${escapeHtml(reason)}</td>
         <td>${link}</td>
       </tr>`;
@@ -128,11 +128,11 @@ function createChart(dashboard) {
           },
         },
         score: {
-          type: "linear", position: "left", min: 0, max: 10,
-          title: { display: true, text: "鷹鴿分數", color: "#7c8b9f", font: { size: 10 } },
+          type: "linear", position: "left", min: 0, max: 100,
+          title: { display: true, text: "鷹鴿分數（0–100）", color: "#7c8b9f", font: { size: 10 } },
           grid: { color: "#edf1f5", drawTicks: false },
           border: { display: false },
-          ticks: { stepSize: 2, color: "#8995a5", padding: 9, font: { size: 10 } },
+          ticks: { stepSize: 20, color: "#8995a5", padding: 9, font: { size: 10 } },
         },
         yield: {
           type: "linear", position: "right",
@@ -174,7 +174,7 @@ function createChart(dashboard) {
 function populateSummary(dashboard) {
   const latestScore = dashboard.scores.at(-1);
   document.querySelector("#latest-score").textContent = numberFormat.format(latestScore.score);
-  document.querySelector("#latest-meeting").textContent = `會議日期 ${displayDate(latestScore.date)} · 0–10 分`;
+  document.querySelector("#latest-meeting").textContent = `會議日期 ${displayDate(latestScore.date)} · 0–100 分`;
   const action = document.querySelector("#latest-action");
   action.textContent = latestScore.action;
   if (latestScore.action === "升息") action.classList.add("up");

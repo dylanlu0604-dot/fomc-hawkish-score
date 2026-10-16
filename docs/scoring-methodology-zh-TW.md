@@ -1,6 +1,6 @@
 # FOMC 鷹派/鴿派分數公式修訂說明
 
-本文件記錄既有 FOMC v4 計分規則與修訂理由，適用於本 repository 的歷史分數。歷史 toneAdj 由人工判讀；自動更新的新會議改由 OpenAI GPT-6 Luna 依本文件的 -2 至 +2 量尺產生 toneAdj，再沿用相同加權公式。完整分數資料見 `../data/fomc_hawkish_scores.csv`；舊版完整資料未包含在這個獨立 repository。
+本文件記錄 FOMC 加權訊號及修訂理由。2026-10-16 起，總分由 0–10 換算為 0–100：所有總分加總項乘以 10，判讀與排序不變。2000–2005 年回補資料由 OpenAI GPT-6 Luna 判讀；2006 年起的既有分數保留原判讀、不重新評分，只換算分數尺度。完整分數資料見 `../data/fomc_hawkish_scores.csv`。
 
 ## 1. 原公式的問題
 
@@ -19,15 +19,15 @@ initialScore = rateBase(action, bp) + toneAdj + qeAdj + qtAdj + bondAdj
 4. **精度跟輸入品質不成比例**：人工給的整數判斷（-2~2）卻用 `Math.round(score*4)/4` 算到小數點後兩位，製造假精確。
 5. 原文件修訂時曾擔心表格包含尚未確認的 `2026-09-16` 會議。這是當時的資料狀態疑慮；目前該日期已由官方 FOMC 聲明稿確認。
 
-## 2. 新公式
+## 2. 目前公式（0–100）
 
 ```
-score = clamp( 5 + w_rate × rateSignal + w_tone × toneSignal + w_asset × assetSignal + dissentAdj, 0, 10 )
+score = clamp( 50 + 30 × rateSignal + 10 × toneSignal + 20 × assetSignal + dissentAdj, 0, 100 )
 
-w_rate = 3, w_tone = 1, w_asset = 2   ← 已依討論調高 rateSignal 權重（原本 w_rate=2）
+w_rate = 3, w_tone = 1, w_asset = 2   （原始訊號權重；每項貢獻換算為 0–100 分制）
 ```
 
-範圍檢查：理論最大 = 5+3+1+2 = 11，理論最小 = 5-3-1-2 = -1，**超出 0~10 量表**，因此最終分數需要一個邊界 clamp。**這跟問題1原本批評的「事後鉗制」在形式上類似，差別在於：這裡只在少數觸及邊界的極端案例才會被夾到（實測170場中只有2場：2008-12-16、2020-03-15），且不像原公式的 `applyRateConstraints` 會用 action/bp 覆寫掉其他因子的作用——多數會議的分數仍完整反映三個signal的加權和，沒有被截斷。**
+`rateSignal`、`toneSignal`、`assetSignal` 的定義維持不變。加總項在 0–100 分制分別為 `30 × rateSignal`、`10 × toneSignal`、`20 × assetSignal`；利率異議調整也換算為 1 或 2 分。最終分數限制在 0–100。
 
 `bondAdj` 直接拿掉，不再放進最終分數（解決問題2）。
 
@@ -37,14 +37,14 @@ w_rate = 3, w_tone = 1, w_asset = 2   ← 已依討論調高 rateSignal 權重�
 
 ```
 netDissent = dissentHawkishCount - dissentDovishCount
-dissentAdj =  0.1  （netDissent =  1 或  2）
-             0.2  （netDissent ≥  3）
-            -0.1  （netDissent = -1 或 -2）
-            -0.2  （netDissent ≤ -3）
+dissentAdj =  1  （netDissent =  1 或  2）
+             2  （netDissent ≥  3）
+            -1  （netDissent = -1 或 -2）
+            -2  （netDissent ≤ -3）
              0    （沒有可辨識的利率異議，或鷹、鴿人數相抵）
 ```
 
-CSV 新增 `dissentHawkishCount`、`dissentDovishCount`、`dissentAdj`、`dissentReason` 四欄。這是直接加在 0–10 分數上的微幅調整，不另設權重，避免使少數委員的異議蓋過多數決策。
+上表列出換算後的分值；程式先算出 0.1 或 0.2 的原始異議調整，再乘以 10。CSV 的 `dissentAdj` 以 0–100 分制保存，直接加到總分，不另設權重，避免使少數委員的異議蓋過多數決策。
 
 ### 2.1 rateSignal（利率決策，客觀計算，不需人工判斷）
 
@@ -99,13 +99,13 @@ const toneSignal = clamp(toneAdj / 2, -1, 1);
 - 若某個資產負債表工具（如 RMP）持續運作但某場會議聲明稿未重提，目前做法是該場會議的 `assetSignal` 直接算 0（無新增動作），不會自動延續前一場的寬鬆/緊縮訊號——這是文字判讀法本身的限制，經討論後選擇接受、不额外處理。
 + 原始修訂文件曾提醒確認 `2026-09-16` 是否為預測值；此日期目前已由 Federal Reserve 官方聲明稿確認，GitHub 初始化資料亦保存該官方來源。
 
-## 5. 全量執行結果摘要（基本權重：w_rate=3、75bp封頂）
+## 5. 原始 0–10 資料集摘要（換算前）
 
-- 共 170 場會議（2006-01-31 ~ 2026-09-16）
+- 原始資料集共 170 場會議（2006-01-31 ~ 2026-09-16）；此數字是 2026-10-16 回補 2000–2005 年資料前的樣本數。
 - 分數分布：最小 0.00、最大 10.00、平均 4.94；36 場的淨利率異議使 `dissentAdj` 非 0。
 - 最低分（0.00，觸底clamp）：2008-12-16、2020-03-15，皆為「急降息100bp + 語氣轉鴿 + 開始QE」同時發生，clamp前原始值為-0.5
 - 最高分（10.00，剛好壓線）：2022-05-04，「升息50bp + 語氣最鷹(toneAdj=2) + 開始QT」同時發生
-- 2022年四場75bp升息（06/15、07/27、09/21、11/02）分數皆為9.00，rateSignal已封頂至+1.0
+- 2022年四場75bp升息（06/15、07/27、09/21、11/02）原始分數皆為9.00，rateSignal已封頂至+1.0。轉換後相應分數為90.00。
 + 含異議調整的最新版逐場資料見本 repository 的 `../data/fomc_hawkish_scores.csv`。
 
 ## 6. 已知但尚未處理的疑慮（2025-09-18討論中提出）

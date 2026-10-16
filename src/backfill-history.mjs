@@ -110,7 +110,7 @@ async function backfillYear(year) {
   const parsedRows = parseCsv(csvText);
   const headers = parsedRows.shift();
   if (!headers || headers.join("|") !== scoreHeaders.join("|")) {
-    throw new Error("Unexpected score CSV headers; expected the existing v4 format");
+    throw new Error("Unexpected score CSV headers; expected the existing score CSV format");
   }
 
   const rows = parsedRows.filter((row) => row.length > 1);
@@ -174,7 +174,8 @@ async function backfillYear(year) {
       statementSha256: statement.sha256,
       status: existingIndex >= 0 ? "rescored_historical_statement" : "scored_historical_meeting",
       model,
-      promptVersion: "fomc-score-v2-openai",
+      promptVersion: "fomc-score-v3-openai",
+      scoreScale: 100,
       scoredAt: new Date().toISOString(),
       score: Number(scoreRow[headers.indexOf("score")]),
       action: aiScore.action,

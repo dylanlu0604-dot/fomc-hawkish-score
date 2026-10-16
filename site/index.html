@@ -30,7 +30,7 @@
 
         <section class="summary-grid" aria-label="最新資料摘要">
           <article class="summary-card summary-score">
-            <div class="card-label">最新會議分數 <span class="info-dot" title="沿用既有 v4 加權計分公式，分數範圍 0–10">i</span></div>
+            <div class="card-label">最新會議分數 <span class="info-dot" title="沿用既有加權訊號，分數換算為 0–100">i</span></div>
             <div class="card-main"><strong id="latest-score">—</strong><span id="latest-action" class="action-pill">讀取中</span></div>
             <div class="card-foot" id="latest-meeting">—</div>
           </article>
@@ -69,7 +69,7 @@
             <button class="legend-toggle" type="button" data-dataset-index="3" aria-controls="score-chart" aria-pressed="true"><i class="legend-line legend-yield"></i><span>2 年期殖利率</span></button>
           </div>
           <div class="chart-wrap"><canvas id="score-chart" role="img" aria-label="FOMC 原始鷹鴿分數、4 次與 8 次會議移動平均，及 2 年期公債殖利率雙軸圖"></canvas></div>
-          <p class="chart-note">每個觀測點代表一場 FOMC 會議。左軸為鷹鴿分數（0–10）；右軸為會議日 2 年期殖利率（%）。移動平均以最近 4／8 次會議計算，均等權重。</p>
+          <p class="chart-note">每個觀測點代表一場 FOMC 會議。左軸為鷹鴿分數（0–100）；右軸為會議日 2 年期殖利率（%）。移動平均以最近 4／8 次會議計算，均等權重。</p>
         </section>
 
         <section class="panel table-panel" aria-labelledby="table-heading">
@@ -87,18 +87,18 @@
           <div class="table-scroll">
             <table>
               <thead>
-                <tr><th scope="col">會議日期</th><th scope="col">利率決議</th><th scope="col" class="numeric">利率項 ×3</th><th scope="col" class="numeric">語氣項 ×1</th><th scope="col">資產負債表項 ×2</th><th scope="col">利率異議調整</th><th scope="col" class="numeric">最終分數</th><th scope="col">AI 判讀理由</th><th scope="col">來源</th></tr>
+                <tr><th scope="col">會議日期</th><th scope="col">利率決議</th><th scope="col" class="numeric">利率項 ×30</th><th scope="col" class="numeric">語氣項 ×10</th><th scope="col">資產負債表項 ×20</th><th scope="col">利率異議調整</th><th scope="col" class="numeric">最終分數</th><th scope="col">AI 判讀理由</th><th scope="col">來源</th></tr>
               </thead>
               <tbody id="score-rows"><tr><td colspan="9" class="empty-row">正在載入計分資料…</td></tr></tbody>
             </table>
           </div>
-          <p class="formula-note">總分 = clamp(5 + 利率項 + 語氣項 + 資產負債表項 + 利率異議調整, 0, 10)。各項細節顯示於欄位次行。</p>
+          <p class="formula-note">總分 = clamp(50 + 利率項 + 語氣項 + 資產負債表項 + 利率異議調整, 0, 100)。各項細節顯示於欄位次行。</p>
           <div class="table-footer"><span id="table-count">—</span><span>最新會議優先 · 可左右滑動查看所有欄位</span></div>
         </section>
       </main>
 
       <footer class="footer">
-        <div class="footer-method"><strong>計分方式</strong><span>沿用 v4 加權公式；4／8 次均線按會議計算。AI 僅評最新一場新會議，不重算歷史分數。</span></div>
+        <div class="footer-method"><strong>計分方式</strong><span>沿用相同加權訊號並換算為 0–100；4／8 次均線按會議計算。AI 僅評最新一場新會議，不重算歷史分數。</span></div>
         <div class="footer-sources">
           <span>殖利率來源：Board of Governors of the Federal Reserve System via <a href="https://fred.stlouisfed.org/series/DGS2" target="_blank" rel="noreferrer">FRED DGS2</a>（每日、百分比）。</span>
           <span>評分及聲明來源：<a href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" target="_blank" rel="noreferrer">Federal Reserve 官方 FOMC 日程與聲明</a>。</span>
