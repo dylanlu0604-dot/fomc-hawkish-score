@@ -168,4 +168,3 @@ id,dateKey,action,bp,rateSignal,toneAdj,toneSignal,assetLabel,assetSignal,toneRe
 20260429,2026-04-29,維持,0,0,1,0.5,無新增動作,0,通膨偏高，能源價格帶來上行風險,0,1,-0.1,明確利率異議（鷹派0人、鴿派1人）：鴿派1人：preferred to lower the target range for the federal funds rate by 1/4 percentage point at this meeting,5.4,v4_weighted_dissent,3,1,2,0,0,0.5,0,5,5.4,5.4,否
 20260617,2026-06-17,維持,0,0,1,0.5,無新增動作,0,通膨相對目標偏高,0,0,0,未偵測到可計分的利率異議,5.5,v4_weighted_dissent,3,1,2,0,0,0.5,0,5,5.5,5.5,否
 20260729,2026-07-29,維持,0,0,1,0.5,無新增動作,0,通膨偏高且有委員偏好升息,3,0,0.2,明確利率異議（鷹派3人、鴿派0人）：鷹派3人：preferred to raise the target range for the federal funds rate by 1/4 percentage point at this meeting,5.7,v4_weighted_dissent,3,1,2,0,0,0.5,0,5,5.7,5.7,否
-20260916,2026-09-16,升息,25,0.33,2,1,無新增動作,0,聲明明確升息 25 個基點，並指出通膨仍高於目標，政策行動旨在更及時地使通膨回到 2%；經濟活動穩健、就業穩定，也支持明顯鷹派判斷。維持充裕準備金屬既有政策，未宣布新的資產購買或縮減措施。,0,0,0,未偵測到可計分的利率異議,7,v4_weighted_dissent,3,1,2,0.33,1,1,0,5,7,7,否
