@@ -71,6 +71,7 @@ function createChart(dashboard) {
       x: Date.parse(`${row.date}T00:00:00Z`),
       meetingDate: row.date,
       original: row.score,
+      ma3: row.ma3,
       ma4: row.ma4,
       ma8: row.ma8,
       yield: observation.value,
@@ -82,10 +83,11 @@ function createChart(dashboard) {
     type: "line",
     data: {
       datasets: [
-        { label: "原始分數", data: series.map((row) => ({ x: row.x, y: row.original })), yAxisID: "score", borderColor: "#2563eb", borderWidth: 1.35, borderDash: [5, 4], pointRadius: 2, fill: false, order: 3 },
-        { label: "4 次會議均線", data: series.map((row) => ({ x: row.x, y: row.ma4 })), yAxisID: "score", borderColor: "#0f9f9a", borderWidth: 2, pointRadius: 0, fill: false, order: 2 },
-        { label: "8 次會議均線", data: series.map((row) => ({ x: row.x, y: row.ma8 })), yAxisID: "score", borderColor: "#7c5ce7", borderWidth: 2, pointRadius: 0, fill: false, order: 1 },
-        { label: "2 年期殖利率", data: series.map((row) => ({ x: row.x, y: row.yield })), yAxisID: "yield", borderColor: "#e18a3b", borderWidth: 1.8, pointRadius: 1.5, tension: 0, fill: false, order: 4 },
+        { label: "原始分數", data: series.map((row) => ({ x: row.x, y: row.original })), yAxisID: "score", borderColor: "#2563eb", borderWidth: 1.35, borderDash: [5, 4], pointRadius: 2, fill: false, order: 5 },
+        { label: "3 次會議均線", data: series.map((row) => ({ x: row.x, y: row.ma3 })), yAxisID: "score", borderColor: "#78879a", borderWidth: 1.8, pointRadius: 0, fill: false, order: 4 },
+        { label: "4 次會議均線", data: series.map((row) => ({ x: row.x, y: row.ma4 })), yAxisID: "score", borderColor: "#0f9f9a", borderWidth: 2, pointRadius: 0, fill: false, order: 3 },
+        { label: "8 次會議均線", data: series.map((row) => ({ x: row.x, y: row.ma8 })), yAxisID: "score", borderColor: "#7c5ce7", borderWidth: 2, pointRadius: 0, fill: false, order: 2 },
+        { label: "2 年期殖利率", data: series.map((row) => ({ x: row.x, y: row.yield })), yAxisID: "yield", borderColor: "#e18a3b", borderWidth: 1.8, pointRadius: 1.5, tension: 0, fill: false, order: 6 },
       ],
     },
     options: {

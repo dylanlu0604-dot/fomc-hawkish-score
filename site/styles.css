@@ -63,6 +63,7 @@ select:focus, input:focus { border-color: #84a9e8; box-shadow: 0 0 0 3px rgb(37 
 .legend-toggle[aria-pressed="false"] { opacity: .42; }
 .legend-line { display: inline-block; width: 18px; height: 0; border-top: 2px solid; }
 .legend-score { border-color: var(--blue); border-top-style: dashed; }
+.legend-ma3 { border-color: #78879a; }
 .legend-ma4 { border-color: var(--teal); }
 .legend-ma8 { border-color: var(--purple); }
 .legend-yield { border-color: var(--orange); }

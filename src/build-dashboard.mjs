@@ -92,6 +92,7 @@ const scores = recordsFromCsv(scoreText).map((row) => ({
 
 if (!scores.length) throw new Error("No valid FOMC score rows found");
 for (const [index, row] of scores.entries()) {
+  row.ma3 = index < 2 ? null : Number((scores.slice(index - 2, index + 1).reduce((sum, item) => sum + item.score, 0) / 3).toFixed(2));
   row.ma4 = index < 3 ? null : Number((scores.slice(index - 3, index + 1).reduce((sum, item) => sum + item.score, 0) / 4).toFixed(2));
   row.ma8 = index < 7 ? null : Number((scores.slice(index - 7, index + 1).reduce((sum, item) => sum + item.score, 0) / 8).toFixed(2));
 }

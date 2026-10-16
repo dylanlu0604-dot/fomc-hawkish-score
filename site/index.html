@@ -64,12 +64,13 @@
           </div>
           <div class="chart-legend" aria-label="圖表資料線">
             <button class="legend-toggle" type="button" data-dataset-index="0" aria-controls="score-chart" aria-pressed="true"><i class="legend-line legend-score"></i><span>原始分數</span></button>
-            <button class="legend-toggle" type="button" data-dataset-index="1" aria-controls="score-chart" aria-pressed="true"><i class="legend-line legend-ma4"></i><span>4 次會議均線</span></button>
-            <button class="legend-toggle" type="button" data-dataset-index="2" aria-controls="score-chart" aria-pressed="true"><i class="legend-line legend-ma8"></i><span>8 次會議均線</span></button>
-            <button class="legend-toggle" type="button" data-dataset-index="3" aria-controls="score-chart" aria-pressed="true"><i class="legend-line legend-yield"></i><span>2 年期殖利率</span></button>
+            <button class="legend-toggle" type="button" data-dataset-index="1" aria-controls="score-chart" aria-pressed="true"><i class="legend-line legend-ma3"></i><span>3 次會議均線</span></button>
+            <button class="legend-toggle" type="button" data-dataset-index="2" aria-controls="score-chart" aria-pressed="true"><i class="legend-line legend-ma4"></i><span>4 次會議均線</span></button>
+            <button class="legend-toggle" type="button" data-dataset-index="3" aria-controls="score-chart" aria-pressed="true"><i class="legend-line legend-ma8"></i><span>8 次會議均線</span></button>
+            <button class="legend-toggle" type="button" data-dataset-index="4" aria-controls="score-chart" aria-pressed="true"><i class="legend-line legend-yield"></i><span>2 年期殖利率</span></button>
           </div>
-          <div class="chart-wrap"><canvas id="score-chart" role="img" aria-label="FOMC 原始鷹鴿分數、4 次與 8 次會議移動平均，及 2 年期公債殖利率雙軸圖"></canvas></div>
-          <p class="chart-note">每個觀測點代表一場 FOMC 會議。左軸為鷹鴿分數（0–100）；右軸為會議日 2 年期殖利率（%）。移動平均以最近 4／8 次會議計算，均等權重。</p>
+          <div class="chart-wrap"><canvas id="score-chart" role="img" aria-label="FOMC 原始鷹鴿分數、3 次、4 次與 8 次會議移動平均，及 2 年期公債殖利率雙軸圖"></canvas></div>
+          <p class="chart-note">每個觀測點代表一場 FOMC 會議。左軸為鷹鴿分數（0–100）；右軸為會議日 2 年期殖利率（%）。移動平均以最近 3／4／8 次會議計算，均等權重。</p>
         </section>
 
         <section class="panel table-panel" aria-labelledby="table-heading">
@@ -98,7 +99,7 @@
       </main>
 
       <footer class="footer">
-        <div class="footer-method"><strong>計分方式</strong><span>沿用相同加權訊號並換算為 0–100；4／8 次均線按會議計算。AI 僅評最新一場新會議，不重算歷史分數。</span></div>
+        <div class="footer-method"><strong>計分方式</strong><span>沿用相同加權訊號並換算為 0–100；3／4／8 次均線按會議計算。AI 僅評最新一場新會議，不重算歷史分數。</span></div>
         <div class="footer-sources">
           <span>殖利率來源：Board of Governors of the Federal Reserve System via <a href="https://fred.stlouisfed.org/series/DGS2" target="_blank" rel="noreferrer">FRED DGS2</a>（每日、百分比）。</span>
           <span>評分及聲明來源：<a href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" target="_blank" rel="noreferrer">Federal Reserve 官方 FOMC 日程與聲明</a>。</span>
