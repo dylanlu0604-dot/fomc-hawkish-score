@@ -75,7 +75,7 @@ export function rebuildSmoothedColumns(headers, sourceRows) {
 
     const scaled = p90 === p10
       ? 50
-      : 20 + (Number(smoothed) - p10) * 60 / (p90 - p10);
+      : 30 + (Number(smoothed) - p10) * 40 / (p90 - p10);
     row[smoothedMaxminIndex] = Math.max(0, Math.min(100, scaled)).toFixed(2);
   }
 
