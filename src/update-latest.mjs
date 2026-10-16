@@ -504,7 +504,7 @@ async function main() {
     sourceUrl: statement.sourceUrl,
     statementSha256: statement.sha256,
     score: currentScore || null,
-    anthropicCalled: shouldScore,
+    aiScoringTriggered: shouldScore,
   }));
 }
 
