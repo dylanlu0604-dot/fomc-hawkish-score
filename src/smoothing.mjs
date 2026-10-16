@@ -1,12 +1,3 @@
-function percentile(values, fraction) {
-  const sorted = [...values].sort((left, right) => left - right);
-  const rank = (sorted.length - 1) * fraction;
-  const lowerIndex = Math.floor(rank);
-  const upperIndex = Math.ceil(rank);
-  const weight = rank - lowerIndex;
-  return sorted[lowerIndex] * (1 - weight) + sorted[upperIndex] * weight;
-}
-
 export function rebuildSmoothedColumns(headers, sourceRows) {
   const sourceHeaders = [...headers];
   const scoreIndex = sourceHeaders.indexOf("score");
@@ -64,8 +55,8 @@ export function rebuildSmoothedColumns(headers, sourceRows) {
     return { headers: nextHeaders, rows };
   }
 
-  const p10 = percentile(smoothedValues, 0.1);
-  const p90 = percentile(smoothedValues, 0.9);
+  const minSmoothed = Math.min(...smoothedValues);
+  const maxSmoothed = Math.max(...smoothedValues);
   for (const row of rows) {
     const smoothed = row[smoothedIndex];
     if (smoothed === "") {
@@ -73,9 +64,9 @@ export function rebuildSmoothedColumns(headers, sourceRows) {
       continue;
     }
 
-    const scaled = p90 === p10
+    const scaled = maxSmoothed === minSmoothed
       ? 50
-      : 30 + (Number(smoothed) - p10) * 40 / (p90 - p10);
+      : 0.55 + (Number(smoothed) - minSmoothed) * 99 / (maxSmoothed - minSmoothed);
     row[smoothedMaxminIndex] = Math.max(0, Math.min(100, scaled)).toFixed(2);
   }
 
