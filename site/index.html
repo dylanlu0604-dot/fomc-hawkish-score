@@ -97,7 +97,7 @@
       </main>
 
       <footer class="footer">
-        <div class="footer-method"><strong>計分方式</strong><span>沿用相同加權訊號並換算為 0–100；平滑數據按 60% 最近 3 場均線與 40% 最近 8 場均線計算。AI 僅評最新一場新會議，不重算歷史分數。</span></div>
+        <div class="footer-method"><strong>計分方式</strong><span>本專案分數獨立計算，並非財經 M 平方的 MM AI 指數；不使用 Embedding 關鍵字向量相似度。OpenAI 依官方聲明判讀利率決議、政策語氣與資產負債表措施，程式再納入聲明中的利率異議並按加權公式計為 0–100 分。平滑線按 60% 最近 3 場與 40% 最近 8 場均線計算，再依歷史最小值／最大值映射至 0.55／99.55 並限制在 0–100。AI 只評新增或變更的最新會議，不重評舊分數。</span></div>
         <div class="footer-sources">
           <span>殖利率來源：Board of Governors of the Federal Reserve System via <a href="https://fred.stlouisfed.org/series/DGS2" target="_blank" rel="noreferrer">FRED DGS2</a>（每日、百分比）。</span>
           <span>評分及聲明來源：<a href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" target="_blank" rel="noreferrer">Federal Reserve 官方 FOMC 日程與聲明</a>。</span>
