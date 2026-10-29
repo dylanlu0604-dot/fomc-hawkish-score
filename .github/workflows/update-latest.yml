@@ -2,8 +2,8 @@ name: Update latest FOMC score
 
 on:
   schedule:
-    # 08:30 Taipei time. Runs after the usual 14:00 ET statement release.
-    - cron: "30 0 * * *"
+    # 02:00 Taipei time on Thursday (18:00 UTC on Wednesday)
+    - cron: "0 18 * * 3"
   workflow_dispatch:
 
 permissions:
